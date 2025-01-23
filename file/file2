@@ -1,0 +1,178 @@
+<?php
+// Database configuration
+$host = 'localhost';   // Your MySQL server
+$dbname = 'school_portal'; // Your database name
+$username = 'root';     // Database username
+$password = '';         // Database password
+
+// Create the PDO connection
+try {
+    $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    // Set PDO error mode to exception
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Could not connect to the database: " . $e->getMessage());
+}
+?>
+
+<?php
+session_start();
+
+if (isset($_SESSION['user_id'])) {
+    header("Location: index.php"); // Redirect to the portal if already logged in
+    exit;
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    // Include database connection
+    include('db.php');
+    
+    // Retrieve user inputs
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Query to get user details from database
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username");
+    $stmt->execute(['username' => $username]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // Check if user exists and password is correct
+    if ($user && password_verify($password, $user['password'])) {
+        // Successful login, store user session
+        $_SESSION['user_id'] = $user['id'];
+        $_SESSION['username'] = $user['username'];
+
+        // Redirect to portal
+        header("Location: index.php");
+        exit;
+    } else {
+        $error = "Invalid username or password!";
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - [School Name] Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h2>Login to [School Name] Portal</h2>
+        <?php if (isset($error)) { echo "<p style='color: red;'>$error</p>"; } ?>
+        <form action="login.php" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
+
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required><br><br>
+
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>
+
+<?php
+session_start();
+session_destroy();  // Destroy all session data
+header("Location: login.php");  // Redirect to login page
+exit;
+?>
+
+<?php
+session_start();
+
+// Check if the user is authenticated
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");  // Redirect to login page if not logged in
+    exit;
+}
+
+// User is logged in, display the portal
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>[School Name] Portal</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <h1>Welcome to the [School Name] Portal</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="#dashboard">Dashboard</a></li>
+                <li><a href="#classes">Virtual Classes</a></li>
+                <li><a href="#community">Community</a></li>
+                <li><a href="#resources">Resources</a></li>
+                <li><a href="#events">Events</a></li>
+                <li><a href="logout.php">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="dashboard">
+            <h2>Welcome to Your Dashboard, <?php echo htmlspecialchars($_SESSION['username']); ?>!</h2>
+            <p>Stay updated with the latest school announcements and view your upcoming events!</p>
+            <div id="calendar">
+                <h3>Upcoming Events:</h3>
+                <ul>
+                    <li>Science Fair - Jan 25</li>
+                    <li>Math Exam - Jan 30</li>
+                    <li>Talent Show - Feb 5</li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="classes">
+            <h2>Virtual Classes</h2>
+            <form action="join_class.php" method="POST">
+                <button type="submit" name="join_class">Join Today's Class</button>
+            </form>
+        </section>
+
+        <section id="community">
+            <h2>Student Community</h2>
+            <form action="create_study_group.php" method="POST">
+                <button type="submit" name="create_group">Create Study Group</button>
+            </form>
+        </section>
+
+        <section id="resources">
+            <h2>Resources</h2>
+            <ul>
+                <li><a href="#">Course Materials</a></li>
+                <li><a href="#">Tutor Booking</a></li>
+                <li><a href="#">Lecture Recordings</a></li>
+            </ul>
+        </section>
+
+        <section id="events">
+            <h2>Upcoming School Events</h2>
+            <button onclick="viewEventDetails()">View More Events</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 [School Name]. All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
+
+// When creating a new user (for example, during registration)
+$hashedPassword = password_hash($password, PASSWORD_DEFAULT); // Hash the password
+
+// Verify the password during login
+if ($user && password_verify($password, $user['password'])) {
+    // Password is correct, proceed with login
+}
