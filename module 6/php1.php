@@ -6,7 +6,7 @@ $dogg = array(
     array("hound", "england", 10)
 );
 
-echo $dogg[0][0] . " type " . $dogg[0][1] . " origin " . $dogg[0][2] . " lifespan<br>";
+echo . " type " . $dogg[0][0] . $dogg[0][1] . " origin " . $dogg[0][2] . " lifespan<br>";
 echo $dogg[1][0] . " type " . $dogg[1][1] . " origin " . $dogg[1][2] . " lifespan<br>";
 echo $dogg[2][0] . " type " . $dogg[2][1] . " origin " . $dogg[2][2] . " lifespan<br>";
 
@@ -52,3 +52,4 @@ for ($i = 1; $i < 5; $i++) {
 }
 
 ?>
+
