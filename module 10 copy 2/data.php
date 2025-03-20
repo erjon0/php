@@ -41,6 +41,7 @@
                 <td><?= $user['surname']?></td>
                 <td><?= $user['email']?></td>
                 <td><?= $user['age']?></td>
+                <td><a href="update.php?id=<?= $user['id']?>">Update</a></td>
             </tr>
             <?php
         }
