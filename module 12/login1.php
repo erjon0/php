@@ -14,5 +14,7 @@ if (isset($_POST['submit'])) {
         $insert->bindParam(':username', $username);
         $insert->execute();
     }
+    
+    
 }
 ?>
