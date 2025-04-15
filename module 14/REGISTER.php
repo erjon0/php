@@ -8,6 +8,7 @@ if (isset($_POST['submit'])) {
     $email = $_POST['email'];
     $password = $_POST['password']; 
     $password = password_hash($password, PASSWORD_DEFAULT);
+}
 
     if(empty($name) || empty($surname) || empty($username) || empty($email) || empty($password)) {
         echo 'Please fill in all fields';
@@ -28,7 +29,7 @@ if (isset($_POST['submit'])) {
         $insert = $db->prepare($sql);
 
         $insert->bindParam(':name', $name);
-        $insert->bindParam(':username', $username);
+        $insert->bindParam(':surname', $surname);
         $insert->bindParam(':username', $username);
         $insert->bindParam(':email', $email);
         $insert->bindParam(':password', $password);
